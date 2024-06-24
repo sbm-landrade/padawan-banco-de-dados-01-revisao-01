@@ -22,3 +22,33 @@ select count(*) from projetos;
 select count(*) from projetos where data_inicio > curdate() or  data_inicio is null;
 --  Conte quantos funcionários têm mais de 35 anos. */
 select count(nome) from funcionarios where idade > 35;
+-- Intermediário
+-- Liste os funcionários com seus respectivos projetos atribuídos.
+select funcionarios.nome as nome_Funcionario, projetos.nome as nome_Projeto
+from atribuicoes
+join funcionarios on atribuicoes.id_funcionario = funcionarios.id
+join projetos on atribuicoes.id_projeto = projetos.id;
+-- Liste os projetos com a contagem de funcionários atribuídos a cada um. --
+select projetos.descricao, count(funcionarios.id) as numero_de_funcionarios
+from atribuicoes
+join funcionarios on atribuicoes.id_funcionario = funcionarios.id
+join projetos on atribuicoes.id_projeto = projetos.id
+group by projetos.descricao;
+-- Selecione os funcionários que estão atribuídos ao projeto 'Projeto A'. --
+select funcionarios.nome as nome_funcionarios
+from atribuicoes
+join funcionarios on atribuicoes.id_funcionario = funcionarios.id
+join projetos on atribuicoes.id_projeto = projetos.id
+where projetos.nome = 'Projeto A';
+-- Liste os funcionários ordenados pelo salário em ordem decrescente. --
+select *
+from funcionarios
+order by salario desc;
+-- Selecione os projetos com descrição que contenha a palavra 'banco'. --
+select * from projetos
+where projetos.descricao like '%banco%';
+-- Liste os funcionários e seus salários, arredondados para duas casas decimais. --
+-- Selecione os projetos que terminam antes de '2023-07-01'. --
+-- Liste os funcionários com idade entre 25 e 30 anos. --
+-- Selecione os projetos onde nenhum funcionário foi atribuído. --
+-- Liste os funcionários que não estão atribuídos a nenhum projeto.
