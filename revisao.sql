@@ -115,3 +115,48 @@ FROM projetos
 JOIN atribuicoes ON projetos.id = atribuicoes.id_projeto
 JOIN funcionarios ON atribuicoes.id_funcionario = funcionarios.id
 WHERE atribuicoes.papel LIKE '%Analista%';
+-- 1. Listar todos os funcionários e seus respectivos projetos, incluindo nome do funcionário, nome do projeto e papel do funcionário no projeto.
+SELECT DISTINCT f.nome AS nome_funcionario, p.nome AS nome_projeto, a.papel AS papel_no_projeto
+FROM funcionarios AS f
+JOIN atribuicoes AS a ON a.id_funcionario = f.id
+JOIN projetos AS p ON a.id_projeto = p.id;
+
+-- 2. Exibir a média salarial dos funcionários por cargo.
+SELECT cargo, ROUND(AVG(salario), 2) AS media_salarial
+FROM funcionarios
+GROUP BY cargo;
+
+-- 3. Mostrar o funcionário mais bem pago e o projeto em que ele trabalha.
+SELECT * FROM funcionarios 
+WHERE salario = (SELECT MAX(salario) FROM funcionarios);
+-- 4. Apresentar a quantidade de projetos em que cada funcionário está participando.
+SELECT f.nome AS funcionario, COUNT(a.id_projeto) AS quantidade_projetos
+FROM funcionarios f
+JOIN atribuicoes a ON f.id = a.id_funcionario
+GROUP BY f.id, f.nome
+ORDER BY f.nome ASC;
+
+-- 1. Calcular a média salarial dos funcionários que participam de projetos específicos (informar o ID do projeto).
+SELECT p.nome as projetos, ROUND(AVG(f.salario), 2) AS media_salarial
+FROM funcionarios f
+JOIN projetos p ON f.id = p.id
+GROUP BY p.nome;
+-- 2. Listar os projetos com a maior quantidade de funcionários alocados.
+select p.descricao as nome_projeto, count(a.id_funcionario) as quantidade_funcionarios
+from projetos as p
+inner join atribuicoes as a on a.id_projeto = p.id
+group by p.descricao
+order by quantidade_funcionarios DESC
+LIMIT 1;
+
+-- 3. Apresentar os projetos que possuem a equipe com a maior média salarial.
+-- Subconsulta para calcular a média salarial de cada projeto
+WITH media_salarios_projetos AS (
+    SELECT p.nome AS projeto_nome, AVG(f.salario) AS media_salarial
+    FROM funcionarios f
+    JOIN projetos p ON f.id = p.id  -- Ajustar conforme o nome da coluna correta
+    GROUP BY p.nome
+)
+SELECT projeto_nome AS projetos, ROUND(media_salarial, 2) AS media_salarial
+FROM media_salarios_projetos
+WHERE media_salarial = (SELECT MAX(media_salarial) FROM media_salarios_projetos);
